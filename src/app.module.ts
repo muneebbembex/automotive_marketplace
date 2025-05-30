@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtModule } from '@nestjs/jwt';
+import { UsersModule } from 'src/user/users.module';
+import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
+import { AuthModule } from './auth/auth.module';
+import { VehicleListingsModule } from './vehicle-listings/vehicle-listings.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, // makes ConfigModule available across the app without re-import
+    }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE as 'postgres' | 'mongodb', // specify your DB type
       host: process.env.DB_HOST, // use your DB host
@@ -19,9 +21,10 @@ import { JwtModule } from '@nestjs/jwt';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // set to false for production
     }),
-    UserModule,
+    UsersModule,
+    VehicleListingsModule,
+    AdminDashboardModule,
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
