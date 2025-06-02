@@ -1,16 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
-import { User } from 'src/user/users.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from 'src/user/entities/users.entity';
 import { UsersService } from 'src/user/users.service';
 import { RegisterAuthDto } from './dto/auth.dto';
+import { UserToken } from '@/user/entities/user-token.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectRepository(UserToken)
+    private userTokenRepository: Repository<UserToken>, // <--- Inject repo
   ) {}
 
   async validateUser(email: string, pass: string) {
@@ -21,21 +25,28 @@ export class AuthService {
     return null;
   }
 
-  login(user: User) {
+  async login(user: User) {
     const payload = { email: user.email, sub: user.id, role: user.role };
+    const token = this.jwtService.sign(payload);
+
+    // Store the token in the DB
+    await this.userTokenRepository.save({
+      token,
+      user,
+      issuedAt: new Date(),
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 8), // 8 hours expiry (adjust if needed)
+    });
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: token,
     };
   }
 
   async register(body: RegisterAuthDto) {
-    // Default role for self-registration
     const role = body.role;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const passwordHash = await hash(body.password, 10);
     return this.usersService.create({
       email: body.email,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       passwordHash,
       role,
       isActive: true,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserRole } from 'src/user/users.entity';
+import { User, UserRole } from 'src/user/entities/users.entity';
 import { ListingStatus, VehicleListing } from 'src/vehicle-listings/entities/vehicle-listing.entity';
 import { Repository } from 'typeorm';
 

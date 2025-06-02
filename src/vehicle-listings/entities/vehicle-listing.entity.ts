@@ -1,4 +1,4 @@
-import { User } from 'src/user/users.entity';
+import { User } from '@/user/entities/users.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 export enum ListingStatus {

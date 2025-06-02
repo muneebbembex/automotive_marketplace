@@ -3,8 +3,6 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
 import { JwtRequestUser } from 'src/common/types/jwt-request-user.interface';
 
-// Define the interface in this file or import it
-
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
@@ -17,8 +15,16 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const req = context.switchToHttp().getRequest();
-    const user = req.user as JwtRequestUser;
+
+    // Define a custom request type that includes the user property
+    const request = context.switchToHttp().getRequest<{ user?: JwtRequestUser }>();
+    const user = request.user;
+
+    // Check if user exists and has a role
+    if (!user || !user.role) {
+      return false;
+    }
+
     return requiredRoles.includes(user.role);
   }
 }

@@ -1,5 +1,6 @@
-import { VehicleListing } from 'src/vehicle-listings/entities/vehicle-listing.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { UserToken } from './user-token.entity';
+import { VehicleListing } from '@/vehicle-listings/entities/vehicle-listing.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -25,4 +26,9 @@ export class User {
 
   @OneToMany(() => VehicleListing, (listing) => listing.dealer)
   listings: VehicleListing[];
+
+
+  @OneToMany(() => UserToken, token => token.user)
+tokens: UserToken[];
+
 }
