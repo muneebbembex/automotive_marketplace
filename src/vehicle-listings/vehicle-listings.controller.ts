@@ -1,10 +1,10 @@
-import { Controller, Get, Patch, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { VehicleListingsService } from './vehicle-listings.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { UserRole } from 'src/user/entities/users.entity';
-import { ListingStatus } from './entities/vehicle-listing.entity';
+import { UserRole } from '@/user/entities/users.entity';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { RolesGuard } from '@/auth/roles.guard';
+import { Roles } from '@/auth/roles.decorator';
+import { VehicleListingDto } from '@/vehicle-listings/dto/vehicle-listings.dto';
 
 @Controller('admin/listings')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -12,21 +12,12 @@ import { ListingStatus } from './entities/vehicle-listing.entity';
 export class VehicleListingsController {
   constructor(private listingsService: VehicleListingsService) {}
 
-  @Get('pending')
-  async getPendingListings() {
-    return this.listingsService.findPendingListings();
-  }
-
   @Get()
-  async getAllListings() {
+  async getAll(): Promise<VehicleListingDto[]> {
     return this.listingsService.findAll();
   }
-
-  @Patch(':id/status')
-  async updateStatus(
-    @Param('id') id: string,
-    @Body('status') status: ListingStatus,
-  ) {
-    return this.listingsService.updateListingStatus(id, status);
+  @Get(':id')
+  async getOne(@Param('id') id: string): Promise<VehicleListingDto> {
+    return this.listingsService.findOne(id);
   }
 }

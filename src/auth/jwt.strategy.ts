@@ -12,10 +12,12 @@ export interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
-      const secret = configService.get<string>('JWT_SECRET');
+    const secret = configService.get<string>('JWT_SECRET');
 
     if (!secret) {
-      throw new UnauthorizedException('JWT_SECRET environment variable is not set');
+      throw new UnauthorizedException(
+        'JWT_SECRET environment variable is not set',
+      );
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

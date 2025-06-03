@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsNumber, IsEnum } from 'class-validator';
-import { ListingStatus } from '../entities/vehicle-listing.entity';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateVehicleListingDto {
   @IsNotEmpty()
@@ -13,7 +12,4 @@ export class CreateVehicleListingDto {
 
   @IsNumber()
   price: number;
-
-  @IsEnum(ListingStatus)
-  status?: ListingStatus; // optional, defaults to pending
 }
