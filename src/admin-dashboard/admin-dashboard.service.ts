@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserRole } from 'src/user/entities/users.entity';
-import { ListingStatus, VehicleListing } from 'src/vehicle-listings/entities/vehicle-listing.entity';
+import { VehicleListing } from 'src/vehicle-listings/entities/vehicle-listing.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -14,12 +14,10 @@ export class AdminDashboardService {
   async getSummary() {
     const totalDealers = await this.usersRepo.count({ where: { role: UserRole.DEALER } });
     const totalListings = await this.listingsRepo.count();
-    const pendingListings = await this.listingsRepo.count({ where: { status: ListingStatus.PENDING } });
 
     return {
       totalDealers,
       totalListings,
-      pendingListings,
     };
   }
 }
